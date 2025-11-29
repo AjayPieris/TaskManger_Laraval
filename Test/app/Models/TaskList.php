@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;    // For hasMany relationsh
 
 class TaskList extends Model
 {
+    protected $table = 'lists'; // Specify the database table name
     // Columns in the database that can be filled using create() or update()
     protected $fillable = [
-        'title',        // Name/title of the list
+        'name',        // Name/title of the list
         'description',  // Description/details about the list (optional)
         'user_id'       // Foreign key: which user owns this list
     ];
