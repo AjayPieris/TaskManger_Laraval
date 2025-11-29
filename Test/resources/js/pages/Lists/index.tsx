@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -18,10 +19,11 @@ import { Textarea } from "../../components/ui/textarea";
 
 import { type BreadcrumbItem } from "@/types";
 import AppLayout from "@/layouts/app-layout";
+import listsRoutes from "../../routes/lists";
 
 interface ListItem {
   id: number;
-  title: string;
+  name: string;
   description: string;
   tasks_count: number;
 }
@@ -51,7 +53,7 @@ export default function ListsIndex({ lists, flash }: Props) {
     processing,
     errors,
   } = useForm({
-    title: "",
+    name: "",
     description: "",
   });
 
@@ -85,14 +87,14 @@ export default function ListsIndex({ lists, flash }: Props) {
   const handleEdit = (list: ListItem) => {
     setEditingList(list);
     setData({
-      title: list.title,
+      name: list.name,
       description: list.description,
     });
     setOpen(true);
   };
 
   const handleDelete = (id: number) => {
-    destroy(route("lists.destroy", id), {
+    destroy(listsRoutes.destroy.url(id), {
       onSuccess: () => {
         // Optionally handle UI updates
       },
@@ -103,7 +105,7 @@ export default function ListsIndex({ lists, flash }: Props) {
     e.preventDefault();
 
     if (editingList) {
-      put(route("lists.update", editingList.id), {
+      put(listsRoutes.update.url(editingList.id), {
         onSuccess: () => {
           setOpen(false);
           reset();
@@ -111,7 +113,7 @@ export default function ListsIndex({ lists, flash }: Props) {
         },
       });
     } else {
-      post(route("lists.store"), {
+      post(listsRoutes.store.url(), {
         onSuccess: () => {
           setOpen(false);
           reset();
@@ -157,19 +159,24 @@ export default function ListsIndex({ lists, flash }: Props) {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>{editingList ? "Edit List" : "New List"}</DialogTitle>
+                <DialogDescription>
+                  {editingList
+                    ? "Update the details of your list below."
+                    : "Create a new list to organize your tasks."}
+                </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
-                    id="title"
+                    id="name"
                     type="text"
-                    value={data.title}
-                    onChange={(e) => setData("title", e.target.value)}
+                    value={data.name}
+                    onChange={(e) => setData("name", e.target.value)}
                     required
                   />
-                  {/* {errors.title && (
-                    <p className="text-sm text-red-500">{errors.title}</p>
+                  {/* {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name}</p>
                   )} */}
                 </div>
                 <div className="space-y-2">
@@ -213,7 +220,7 @@ export default function ListsIndex({ lists, flash }: Props) {
             <Card key={list.id} className="shadow-md">
               <CardHeader className="flex flex-col space-y-1">
                 <CardTitle className="text-lg font-semibold">
-                  {list.title}
+                  {list.name}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground line-clamp-3">
                   {list.description}

@@ -41,7 +41,7 @@ class ListController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
         TaskList::create([
@@ -73,7 +73,7 @@ class ListController extends Controller
     public function update(Request $request, TaskList $list)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
         $list->update($validated);
@@ -87,6 +87,6 @@ class ListController extends Controller
     public function destroy(TaskList $list)
     {
         $list->delete();
-        return redirect()->route('list.index')->with('success', 'List Deleted Successfully');
+        return redirect()->route('lists.index')->with('success', 'List Deleted Successfully');
     }
 }
