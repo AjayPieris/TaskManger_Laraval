@@ -8,85 +8,85 @@ use App\Models\TaskList;
 
 class ListController extends Controller
 {
-   public function index()
-{
-    // Get all task lists for the logged-in user and include their tasks
-    $lists = TaskList::where('user_id', auth()->id())  // Filter lists by current user
-                     ->with('tasks')                   // Load related tasks for each list
-                     ->get();                           // Execute query and get results
+    public function index()
+    {
+        // Example: logged-in user id = 5
+        // This will get only lists where user_id = 5
+        $lists = TaskList::where('user_id', auth()->id())
+                         ->with('tasks')             // Also load tasks inside each list
+                         ->get();                    // Run the query
 
-    // Return the page using Inertia.js and pass data to the frontend
-    return Inertia::render('Lists/index', [            // Render the 'Lists/index' frontend page
-        'lists' => $lists,                             // Pass the task lists and their tasks
-        'flash' => [                                   // Pass flash messages to the page
-            'success' => session('success'),          // Temporary success message
-            'error' => session('error')               // Temporary error message
-        ]
-    ]);
-}
+        // Send data to the React page 'Lists/index'
+        return Inertia::render('Lists/index', [
+            'lists' => $lists,                       // Example: [{id:1,name:"Work"}, {id:2,name:"Home"}]
+            'flash' => [
+                'success' => session('success'),     // Example: "List created!"
+                'error' => session('error')          // Example: "Something went wrong"
+            ]
+        ]);
+    }
 
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        // Not used because form is in React modal
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        // Validate form fields
+        // Example input:
+        // name = "Shopping List"
+        // description = "Buy milk"
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name' => 'required|string|max:255',     // Must have a name like "Work List"
+            'description' => 'nullable|string',      // Description is optional
         ]);
+
+        // Create a new list in the database
         TaskList::create([
-            ...$validated,
-            'user_id' => auth()->id(),
+            ...$validated,                           // Adds name + description
+            'user_id' => auth()->id(),               // Example: user_id = 5
         ]);
-        return redirect()->route('lists.index')->with('success', 'List created successfully.');
+
+        // Redirect back to lists page with a success message
+        return redirect()->route('lists.index')
+                         ->with('success', 'List created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        // Not used
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        // Not used
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, TaskList $list)
     {
+        // Validate new data
+        // Example update:
+        // name = "Updated List Name"
+        // description = "Updated details"
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
+
+        // Update the selected list record
         $list->update($validated);
-        return redirect()->route('lists.index')->with('success', 'List updated successfully.');
-       
+
+        return redirect()->route('lists.index')
+                         ->with('success', 'List updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(TaskList $list)
     {
-        $list->delete();
-        return redirect()->route('lists.index')->with('success', 'List Deleted Successfully');
+        // Example: deleting list with id=10
+        $list->delete();                             // Removes the list from database
+
+        return redirect()->route('lists.index')
+                         ->with('success', 'List Deleted Successfully');
     }
 }
