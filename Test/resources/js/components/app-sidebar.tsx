@@ -11,6 +11,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import tasks from '@/routes/tasks';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, ClipboardList, ListTodo } from 'lucide-react';
@@ -29,7 +30,7 @@ const mainNavItems: NavItem[] = [
     },
      {
         title: 'Tasks',
-        href: dashboard(),
+          href: tasks.index().url,
         icon: ListTodo,
     },
 ];

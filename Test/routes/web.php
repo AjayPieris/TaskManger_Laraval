@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\ListController;
+use App\Http\Controllers\TaskController;
 
 
 
@@ -15,6 +16,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('lists', ListController::class);
+    Route::resource('tasks', TaskController::class);
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');

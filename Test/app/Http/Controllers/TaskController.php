@@ -60,8 +60,8 @@ class TaskController extends Controller
     $lists = TaskList::where('user_id', auth()->id())->get();
 
     // 5. SEND TO SCREEN (FRONTEND)
-    // Send the data to the 'Tasks/Index' page (Vue or React file).
-    return Inertia::render('Tasks/Index', [
+    // Send the data to the 'Tasks/index' page (React file).
+    return Inertia::render('Tasks/index', [
         'tasks' => $tasks,    // The 10 tasks we found
         'lists' => $lists,    // The categories for the dropdown
         
@@ -100,8 +100,8 @@ class TaskController extends Controller
         'description'  => 'nullable|string',         // Can be empty
         'due_date'     => 'nullable|date',           // Can be empty, but if filled, must be a date format
         
-        // IMPORTANT: Check if the category (list) actually exists in the database table 'task_lists'
-        'list_id'      => 'required|exists:task_lists,id', 
+        // IMPORTANT: Check if the category (list) actually exists in the database table 'lists'
+        'list_id'      => 'required|exists:lists,id', 
         
         'is_completed' => 'required|boolean',        // Must be true or false (1 or 0)
     ]);
@@ -136,16 +136,27 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Task $task)
     {
-        //
+        $validated = $request->validate([
+            'title'        => 'required|string|max:255',
+            'description'  => 'nullable|string',
+            'due_date'     => 'nullable|date',
+            'list_id'      => 'required|exists:lists,id',
+            'is_completed' => 'required|boolean',
+        ]);
+        $task->update($validated);
+        return redirect()->route('tasks.index')
+                         ->with('success', 'Task updated successfully.');   
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $task)
     {
-        //
-    }
+        $task->delete();
+        return redirect()->route('tasks.index')
+                         ->with('success', 'Task deleted successfully.');
+    }   
 }
